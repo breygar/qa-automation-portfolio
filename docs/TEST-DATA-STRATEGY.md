@@ -1,7 +1,7 @@
 # Test Data Strategy
 
 **Analysis date:** 2026-09-10
-**Status:** Phase 2 design; no test data was created during analysis.
+**Status:** Phase 4 implementation uses generated users and runtime-discovered cart products.
 
 ## Principles
 
@@ -33,14 +33,23 @@ Account deletion is officially documented in both channels:
 - UI: authenticated `Delete Account` flow with `ACCOUNT DELETED!` confirmation.
 - API: `DELETE /api/deleteAccount` with `email` and `password`.
 
-The API cleanup is the preferred future fallback for test-created accounts because it is direct and
-observable. A failed cleanup must fail or alert the owning test run; it must not be silently ignored.
-No account was created merely to reconfirm this documentation during Phase 2.
+The API cleanup is the implemented fallback for test-created accounts because it is direct and
+observable. Account data is generated from the current timestamp plus a UUID, uses the reserved
+`example.com` domain, remains in process memory, and is never committed. Cleanup verifies absence,
+deletes only when needed, and verifies absence again. If both an assertion and cleanup fail, the run
+surfaces both errors.
+
+The shared fixture user is worker-scoped only for non-destructive login, logout, and
+duplicate-registration checks. UI registration and deletion tests own unique accounts. UI deletion
+must succeed and be confirmed; API deletion is fallback cleanup, not a substitute assertion.
+
+Cart tests discover products at runtime, preserve observed identifiers/names/prices for exact
+assertions, and use a fresh browser context for each scenario. Closing the context discards cart
+state without persistent application data.
 
 ## Open data questions
 
-- Whether repeated use of plus-addressed email aliases is accepted consistently.
 - Server-side length and normalization limits for profile, address, review, and contact fields.
-- Whether cart state is cookie-backed, server-backed after login, or merged by another mechanism.
+- Whether guest cart state is merged or otherwise preserved across login.
 - Whether order history or order deletion exists outside the documented flows.
 - Whether subscriptions, contact messages, or reviews have any supported cleanup route.

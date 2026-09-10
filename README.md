@@ -7,7 +7,7 @@ automation, and responsible use of a public third-party system.
 
 ## Current implementation
 
-Phases 1 through 3 provide:
+Phases 1 through 4 provide:
 
 - strict TypeScript, ESLint flat config, and Prettier;
 - typed and validated `BASE_URL` configuration with `.env` support;
@@ -16,12 +16,13 @@ Phases 1 through 3 provide:
 - one GitHub Actions pipeline for quality checks, API tests, and browser tests;
 - a dated functional/API analysis and test-data strategy;
 - a risk-based catalog of 52 designed scenarios with traceability;
-- four non-mutating automated tests using small page and API abstractions; and
+- 13 automated tests using small page, API, data, and lifecycle abstractions; and
 - test strategy, cycle planning, BDD, bug-reporting, automation, and AI-assistance documentation.
 
-Current automation covers two official product API behaviors and two Chromium product-discovery
-behaviors. Checkout, payment, authentication, account mutation, contact, review, subscription, and
-broad regression remain unimplemented. There are no custom fixtures or generated reports committed.
+Current automation covers two official product API behaviors and 11 Chromium UI behaviors across
+product discovery, authentication, registration/account lifecycle, and cart state. Disposable users
+are unique, held in process memory, and verified absent after cleanup. Checkout, payment, contact,
+review, subscription, and broad regression remain unimplemented. No generated reports are committed.
 
 ## Target architecture and roadmap
 
@@ -47,7 +48,7 @@ flowchart TD
 | 1. Foundation                           | Implemented | Tooling, configuration, CI policy, and honest QA documentation           |
 | 2. Application analysis and test design | Implemented | Verified inventory, risks, 52 scenarios, traceability, API/data analysis |
 | 3. Foundational automation              | Implemented | Two API and two Chromium product tests with used-only abstractions       |
-| 4. Risk-based expansion                 | Planned     | Remaining high-value API, account, cart, and checkout scenarios          |
+| 4. Stateful automation                  | Implemented | Nine authentication, registration/account, and cart scenarios            |
 | 5. Broader evidence                     | Planned     | Cross-browser regression and refined reporting based on observed risks   |
 
 ## Application analysis
@@ -63,7 +64,7 @@ contact, subscription, navigation, and the officially published API surface.
 | Critical / High / Medium / Low     | 8 / 26 / 16 / 2 |
 | Automate / Manual / Consider Later |      38 / 5 / 9 |
 | Planned `@smoke` / `@regression`   |          7 / 38 |
-| Executable tests                   |               4 |
+| Executable tests                   |              13 |
 
 See [`docs/FUNCTIONAL-INVENTORY.md`](docs/FUNCTIONAL-INVENTORY.md),
 [`docs/TEST-SCENARIOS.md`](docs/TEST-SCENARIOS.md), and
@@ -97,17 +98,21 @@ share this origin, so a duplicate `API_BASE_URL` is not needed.
 
 ```text
 src/
-  api/       Typed transport parsing and the product API methods used by tests
+  api/       Typed transport parsing plus product and account API methods used by tests
   config/    Validated environment configuration
-  pages/     Home and product page interactions used by UI tests
+  data/      Native synthetic-user generation
+  fixtures/  Disposable-user ownership and verified cleanup
+  pages/     Small page objects used by product, account, and cart tests
 tests/
   api/       Official product API coverage
-  ui/        Chromium-first product discovery coverage
+  ui/        Chromium-first product, user-lifecycle, and cart coverage
 docs/        QA analysis, strategy, scenarios, and traceability
 ```
 
-No custom fixture is needed for four independent, non-mutating tests. Playwright's built-in `page`
-and `request` fixtures make lifecycle explicit without adding abstraction.
+Playwright still supplies a fresh browser context per UI test. One worker-scoped disposable user is
+shared only by the non-destructive valid-login, logout, and duplicate-registration scenarios; its
+fixture owns verified API teardown, including retries and direct single-test execution. UI
+registration and deletion scenarios own separate users and always attempt verified cleanup.
 
 ## Scripts
 
@@ -152,18 +157,22 @@ only after test data and mutable state are proven isolated.
 
 ## Known limitations
 
-- Four catalog/search scenarios are automated; the other 48 designed scenarios are not implemented.
+- Thirteen scenarios are automated; the other 39 designed scenarios are not implemented.
 - Public-site data, availability, and behavior are outside this repository's control.
 - BDD artifacts are documentation only; Cucumber is not installed.
 - Reporting is limited to Playwright's built-in console and HTML reporters.
-- Test data lifecycle, authentication state, reusable page/service abstractions, and accessibility
-  coverage remain planned and must be justified by implemented scenarios.
+- Cross-browser execution is configured but Phase 4 was validated locally only in Chromium.
+- Checkout, payment/order, contact, review, subscription, and accessibility coverage remain planned
+  and must be justified by implemented scenarios.
 
 ## Engineering decisions
 
 - Capability-driven structure avoids empty folders and speculative abstractions.
 - Exact dependency versions and the repository lockfile make installation reproducible.
 - One worker reduces interference with shared mutable state.
+- Native UUID-based synthetic users avoid static credentials and third-party data generators.
+- Account teardown verifies absence and preserves both test and cleanup failures when both occur.
+- Runtime product selection and isolated browser contexts avoid shared or hard-coded cart state.
 - Failure-only screenshots/videos and first-retry traces balance evidence with storage.
 - `BASE_URL` is centralized and validated without introducing unused schema tooling.
 - AI may assist analysis or drafting, but accountable human review is mandatory.
