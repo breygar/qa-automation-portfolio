@@ -21,6 +21,15 @@ export class ApiClient {
     return this.decodeResponse(response, `POST ${path}`, decode);
   }
 
+  async deleteForm<T>(
+    path: string,
+    form: Record<string, string>,
+    decode: Decoder<T>,
+  ): Promise<ApiResult<T>> {
+    const response = await this.request.delete(path, { form });
+    return this.decodeResponse(response, `DELETE ${path}`, decode);
+  }
+
   private async decodeResponse<T>(
     response: APIResponse,
     operation: string,

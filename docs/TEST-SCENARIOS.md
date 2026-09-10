@@ -1,11 +1,11 @@
 # Test Scenario Catalog
 
 **Analysis date:** 2026-09-10
-**Status:** 52 designed scenarios; 4 automated in Phase 3.
+**Status:** 52 designed scenarios; 13 automated through Phase 4.
 
-Priority is risk-based. `Automate` means suitable for a future implementation, not currently
-automated. `Consider Later` requires an unresolved data, impact, or oracle decision. Tags define
-planned suite membership; they do not indicate executable coverage.
+Priority is risk-based. `Automate` means implemented or suitable for implementation; executable
+status and repository paths are recorded in `TRACEABILITY-MATRIX.md`. `Consider Later` requires an
+unresolved data, impact, or oracle decision. Tags define suite membership for automated candidates.
 
 | ID             | Feature            | Scenario                                                                                                          | Priority | Type                       | Automation Decision | Reason                                                                       | Suite tags             |
 | -------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------- | -------- | -------------------------- | ------------------- | ---------------------------------------------------------------------------- | ---------------------- |
@@ -72,5 +72,5 @@ planned suite membership; they do not indicate executable coverage.
 | `@smoke` / `@regression`           |          7 / 38 |
 
 Requirements and expected results not explicitly documented by the site remain assumptions or open
-questions. Before implementation, each scenario still needs executable preconditions, test data,
-cleanup, and assertion detail.
+questions. Before each remaining scenario is implemented, it still needs executable preconditions,
+test data, cleanup, and assertion detail.

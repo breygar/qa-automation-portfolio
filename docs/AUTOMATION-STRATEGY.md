@@ -1,7 +1,7 @@
 # Automation Strategy
 
 **Analysis date:** 2026-09-10
-**Status:** Phase 3 foundation implements 4 of 52 designed scenarios.
+**Status:** Phase 4 implements 13 of 52 designed scenarios.
 
 ## Decision model
 
@@ -16,20 +16,21 @@ A scenario is marked:
 
 The catalog currently contains **38 Automate, 5 Manual, and 9 Consider Later** decisions.
 
-## Phase 3 implementation
+## Implemented automation
 
-| Scenario    | Layer       | Implementation               |
-| ----------- | ----------- | ---------------------------- |
-| AE-API-001  | API         | `tests/api/products.spec.ts` |
-| AE-API-006  | API         | `tests/api/products.spec.ts` |
-| AE-PROD-001 | Chromium UI | `tests/ui/products.spec.ts`  |
-| AE-PROD-003 | Chromium UI | `tests/ui/products.spec.ts`  |
+| Scenario group                        | Layer       | Implementation                    |
+| ------------------------------------- | ----------- | --------------------------------- |
+| AE-API-001, AE-API-006                | API         | `tests/api/products.spec.ts`      |
+| AE-PROD-001, AE-PROD-003              | Chromium UI | `tests/ui/products.spec.ts`       |
+| AE-AUTH-001, AE-AUTH-002, AE-AUTH-003 | Chromium UI | `tests/ui/user-lifecycle.spec.ts` |
+| AE-REG-001, AE-REG-002, AE-ACCT-003   | Chromium UI | `tests/ui/user-lifecycle.spec.ts` |
+| AE-CART-001, AE-CART-002, AE-CART-004 | Chromium UI | `tests/ui/cart.spec.ts`           |
 
-These four tests are non-mutating. API parsing explicitly separates HTTP status from body-level
-`responseCode` and validates only consumed fields. `HomePage` and `ProductsPage` encapsulate the
-navigation and catalog interactions used by the UI tests. No custom fixture is justified at this
-size: Playwright's built-in `page` and `request` fixtures plus direct object construction keep
-lifecycle and ownership visible.
+API parsing explicitly separates HTTP status from body-level `responseCode` and validates only
+consumed fields, including account setup, verification, and teardown responses. Small page objects
+encapsulate only interactions used by current tests. A worker-scoped disposable user is shared only
+by non-destructive login, logout, and duplicate-registration tests; destructive registration and
+deletion scenarios own separate users. Every UI test retains Playwright's fresh browser context.
 
 ## Selection by scenario class
 
@@ -57,9 +58,9 @@ The seven `@smoke` candidates answer whether the environment is healthy enough f
 | AE-API-001  | Is the product API reachable and structurally usable?       | Implemented     |
 | AE-PROD-001 | Does the catalog render usable product cards?               | Implemented     |
 | AE-PROD-003 | Does core product discovery return results?                 | Implemented     |
-| AE-AUTH-001 | Can an existing disposable user authenticate?               | Not Implemented |
-| AE-REG-001  | Can required new test state be created and cleaned up?      | Not Implemented |
-| AE-CART-001 | Can a shopper establish cart state?                         | Not Implemented |
+| AE-AUTH-001 | Can an existing disposable user authenticate?               | Implemented     |
+| AE-REG-001  | Can required new test state be created and cleaned up?      | Implemented     |
+| AE-CART-001 | Can a shopper establish cart state?                         | Implemented     |
 | AE-CHK-002  | Can an authenticated shopper reach a coherent order review? | Not Implemented |
 
 Each smoke candidate also carries `@regression`. The suite should stop broader execution when a
@@ -67,8 +68,8 @@ state-creation or environment gate fails, while still guaranteeing account clean
 
 ## Planned regression scope
 
-The **38 `@regression` candidates** are exactly the scenarios currently marked `Automate`; 4 are
-implemented and 34 remain planned. Regression is intended to cover:
+The **38 `@regression` candidates** are exactly the scenarios currently marked `Automate`; 13 are
+implemented and 25 remain planned. Regression is intended to cover:
 
 - API product, brand, search, login-error, parameter, and method contracts;
 - authentication, account state, registration data, and supported deletion;
@@ -82,8 +83,9 @@ through the existing explicit manual dispatch after stability is proven.
 
 ## Reliability and data controls
 
-- Keep Playwright at one worker until account, cart, and order isolation is proven.
-- Use a fresh browser context per scenario and a unique account per stateful flow.
+- Keep Playwright at one worker until broader stateful and cross-browser isolation is proven.
+- Use a fresh browser context per scenario. Share a disposable user only across non-destructive
+  consumers with fixture-owned teardown; destructive flows own unique users.
 - Prefer API setup/cleanup only when the same official behavior is itself validated and failures are
   surfaced.
 - Discover products at runtime and carry observed name/price/quantity into downstream assertions.
@@ -91,7 +93,7 @@ through the existing explicit manual dispatch after stability is proven.
   data.
 - Retries remain diagnostic and CI-only; a retry must not substitute for root-cause analysis.
 
-## Phase transition rule
+## Execution policy
 
-Phase 3 removed `--pass-with-no-tests` from normal scripts and CI. Zero discovered tests now fails,
-protecting the repository from false-green execution.
+Zero discovered tests fails in normal scripts and CI. Chromium is the local/default UI target;
+Firefox and WebKit remain explicit cross-browser runs to limit traffic against the public site.
