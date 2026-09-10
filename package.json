@@ -1,0 +1,37 @@
+{
+  "name": "qa-automation-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A professional quality engineering portfolio built with Playwright and TypeScript.",
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "test": "playwright test --project=api --project=chromium",
+    "test:ui": "playwright test --project=chromium",
+    "test:api": "playwright test --project=api",
+    "test:smoke": "playwright test --project=api --project=chromium --grep @smoke",
+    "test:regression": "playwright test --project=api --project=chromium --grep @regression",
+    "test:cross-browser": "playwright test --project=chromium --project=firefox --project=webkit",
+    "test:headed": "playwright test --project=chromium --headed",
+    "test:debug": "playwright test --project=chromium --debug",
+    "test:report": "playwright show-report",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@types/node": "24.13.4",
+    "dotenv": "17.4.2",
+    "eslint": "10.10.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-playwright": "2.11.0",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.70.0"
+  }
+}
