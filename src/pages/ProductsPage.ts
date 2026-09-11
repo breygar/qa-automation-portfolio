@@ -1,20 +1,11 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { parseCurrencyAmount } from './currency';
+
 export interface SelectedProduct {
   id: string;
   name: string;
   price: number;
-}
-
-function parsePrice(value: string): number {
-  const numericText = value.replace(/[^0-9.]/g, '');
-  const price = Number(numericText);
-
-  if (!/\d/.test(numericText) || !Number.isFinite(price)) {
-    throw new Error(`Product price did not contain a valid amount: "${value}".`);
-  }
-
-  return price;
 }
 
 export class ProductsPage {
@@ -92,7 +83,7 @@ export class ProductsPage {
     return {
       id,
       name,
-      price: parsePrice(priceText),
+      price: parseCurrencyAmount(priceText, `Product card ${index} price`),
     };
   }
 

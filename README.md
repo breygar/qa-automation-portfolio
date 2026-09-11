@@ -7,7 +7,7 @@ automation, and responsible use of a public third-party system.
 
 ## Current implementation
 
-Phases 1 through 4 provide:
+Phases 1 through 5 provide:
 
 - strict TypeScript, ESLint flat config, and Prettier;
 - typed and validated `BASE_URL` configuration with `.env` support;
@@ -16,13 +16,14 @@ Phases 1 through 4 provide:
 - one GitHub Actions pipeline for quality checks, API tests, and browser tests;
 - a dated functional/API analysis and test-data strategy;
 - a risk-based catalog of 52 designed scenarios with traceability;
-- 13 automated tests using small page, API, data, and lifecycle abstractions; and
+- 22 automated tests using small page, API, data, and lifecycle abstractions; and
 - test strategy, cycle planning, BDD, bug-reporting, automation, and AI-assistance documentation.
 
-Current automation covers two official product API behaviors and 11 Chromium UI behaviors across
-product discovery, authentication, registration/account lifecycle, and cart state. Disposable users
-are unique, held in process memory, and verified absent after cleanup. Checkout, payment, contact,
-review, subscription, and broad regression remain unimplemented. No generated reports are committed.
+Current automation covers five official product, brand, search, and authentication API behaviors and
+17 Chromium UI behaviors across product discovery, authentication, registration/account lifecycle,
+cart state, and pre-payment checkout. Disposable users are unique, held in process memory, and
+verified absent after cleanup. Payment/order confirmation, contact, review, subscription, and broad
+regression remain unimplemented. No generated reports are committed.
 
 ## Target architecture and roadmap
 
@@ -43,13 +44,13 @@ flowchart TD
   CI["GitHub Actions"] --> Tests
 ```
 
-| Phase                                   | Status      | Intended outcome                                                         |
-| --------------------------------------- | ----------- | ------------------------------------------------------------------------ |
-| 1. Foundation                           | Implemented | Tooling, configuration, CI policy, and honest QA documentation           |
-| 2. Application analysis and test design | Implemented | Verified inventory, risks, 52 scenarios, traceability, API/data analysis |
-| 3. Foundational automation              | Implemented | Two API and two Chromium product tests with used-only abstractions       |
-| 4. Stateful automation                  | Implemented | Nine authentication, registration/account, and cart scenarios            |
-| 5. Broader evidence                     | Planned     | Cross-browser regression and refined reporting based on observed risks   |
+| Phase                                   | Status      | Intended outcome                                                          |
+| --------------------------------------- | ----------- | ------------------------------------------------------------------------- |
+| 1. Foundation                           | Implemented | Tooling, configuration, CI policy, and honest QA documentation            |
+| 2. Application analysis and test design | Implemented | Verified inventory, risks, 52 scenarios, traceability, API/data analysis  |
+| 3. Foundational automation              | Implemented | Two API and two Chromium product tests with used-only abstractions        |
+| 4. Stateful automation                  | Implemented | Nine authentication, registration/account, and cart scenarios             |
+| 5. Checkout and expanded API coverage   | Implemented | Pre-payment checkout integrity plus brand, search, and login API evidence |
 
 ## Application analysis
 
@@ -64,7 +65,7 @@ contact, subscription, navigation, and the officially published API surface.
 | Critical / High / Medium / Low     | 8 / 26 / 16 / 2 |
 | Automate / Manual / Consider Later |      38 / 5 / 9 |
 | Planned `@smoke` / `@regression`   |          7 / 38 |
-| Executable tests                   |              13 |
+| Executable tests                   |              22 |
 
 See [`docs/FUNCTIONAL-INVENTORY.md`](docs/FUNCTIONAL-INVENTORY.md),
 [`docs/TEST-SCENARIOS.md`](docs/TEST-SCENARIOS.md), and
@@ -98,14 +99,14 @@ share this origin, so a duplicate `API_BASE_URL` is not needed.
 
 ```text
 src/
-  api/       Typed transport parsing plus product and account API methods used by tests
+  api/       Typed transport parsing plus product, brand, and account API methods used by tests
   config/    Validated environment configuration
   data/      Native synthetic-user generation
   fixtures/  Disposable-user ownership and verified cleanup
-  pages/     Small page objects used by product, account, and cart tests
+  pages/     Small page objects used by product, account, cart, and checkout tests
 tests/
-  api/       Official product API coverage
-  ui/        Chromium-first product, user-lifecycle, and cart coverage
+  api/       Official product, brand, search, and authentication API coverage
+  ui/        Chromium-first product, user-lifecycle, cart, and checkout coverage
 docs/        QA analysis, strategy, scenarios, and traceability
 ```
 
@@ -113,6 +114,8 @@ Playwright still supplies a fresh browser context per UI test. One worker-scoped
 shared only by the non-destructive valid-login, logout, and duplicate-registration scenarios; its
 fixture owns verified API teardown, including retries and direct single-test execution. UI
 registration and deletion scenarios own separate users and always attempt verified cleanup.
+Checkout tests likewise own a unique account per stateful scenario, stop before payment submission,
+and verify account absence through the supported account API during teardown.
 
 ## Scripts
 
@@ -157,13 +160,15 @@ only after test data and mutable state are proven isolated.
 
 ## Known limitations
 
-- Thirteen scenarios are automated; the other 39 designed scenarios are not implemented.
+- Twenty-two scenarios are automated; the other 30 designed scenarios are not implemented.
 - Public-site data, availability, and behavior are outside this repository's control.
 - BDD artifacts are documentation only; Cucumber is not installed.
 - Reporting is limited to Playwright's built-in console and HTML reporters.
-- Cross-browser execution is configured but Phase 4 was validated locally only in Chromium.
-- Checkout, payment/order, contact, review, subscription, and accessibility coverage remain planned
-  and must be justified by implemented scenarios.
+- Cross-browser execution is configured, but Phase 5 local validation remains Chromium-only.
+- Checkout automation ends at the payment page. Successful order confirmation remains deferred
+  because the site documents account deletion but no supported order cleanup.
+- Payment/order confirmation, contact, review, subscription, and accessibility coverage remain
+  planned and must be justified by implemented scenarios.
 
 ## Engineering decisions
 

@@ -82,11 +82,7 @@ export class UsersApi {
   }
 
   async accountExists(credentials: UserCredentials): Promise<boolean> {
-    const result = await this.client.postForm(
-      '/api/verifyLogin',
-      credentialsForm(credentials),
-      decodeOperationResponse,
-    );
+    const result = await this.verifyLogin(credentials);
     assertTransport(result, 'verifyLogin');
 
     if (result.body.responseCode === 200 && result.body.message === 'User exists!') {
@@ -99,6 +95,14 @@ export class UsersApi {
 
     throw new Error(
       `verifyLogin returned application ${result.body.responseCode} "${result.body.message}"; expected an existing or absent account response.`,
+    );
+  }
+
+  verifyLogin(credentials: UserCredentials): Promise<ApiResult<AccountOperationResponse>> {
+    return this.client.postForm(
+      '/api/verifyLogin',
+      credentialsForm(credentials),
+      decodeOperationResponse,
     );
   }
 
