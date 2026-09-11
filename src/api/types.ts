@@ -15,6 +15,16 @@ export interface ProductsResponse {
   products: ProductSummary[];
 }
 
+export interface BrandSummary {
+  id: number;
+  brand: string;
+}
+
+export interface BrandsResponse {
+  responseCode: number;
+  brands: BrandSummary[];
+}
+
 export interface ApiErrorResponse {
   responseCode: number;
   message: string;

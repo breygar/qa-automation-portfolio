@@ -42,6 +42,14 @@ export class ProductsApi {
     return this.client.get('/api/productsList', decodeProductsResponse);
   }
 
+  search(term: string): Promise<ApiResult<ProductsResponse>> {
+    return this.client.postForm(
+      '/api/searchProduct',
+      { search_product: term },
+      decodeProductsResponse,
+    );
+  }
+
   searchWithoutRequiredTerm(): Promise<ApiResult<ApiErrorResponse>> {
     return this.client.postForm('/api/searchProduct', {}, decodeApiErrorResponse);
   }

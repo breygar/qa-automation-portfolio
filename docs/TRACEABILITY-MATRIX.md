@@ -1,7 +1,7 @@
 # Traceability Matrix
 
 **Analysis date:** 2026-09-10
-**Status:** 13 scenarios are implemented through Phase 4; 39 remain `Not Implemented` with empty
+**Status:** 22 scenarios are implemented through Phase 5; 30 remain `Not Implemented` with empty
 automated-test paths.
 
 | Feature / Requirement           | Risk         | Scenario ID    | Scenario                                     | Priority | Automation Decision | Automation Status | Automated Test                    |
@@ -15,9 +15,9 @@ automated-test paths.
 | Registration / uniqueness       | R-002        | AE-REG-002     | Existing email rejected                      | High     | Automate            | Implemented       | `tests/ui/user-lifecycle.spec.ts` |
 | Registration / required data    | R-002        | AE-REG-003     | Incomplete registration prevented            | High     | Manual              | Not Implemented   |                                   |
 | Registration / preferences      | R-002        | AE-REG-004     | Optional preferences selected independently  | Medium   | Consider Later      | Not Implemented   |                                   |
-| Registration / data integrity   | R-002        | AE-REG-005     | Identity/address preserved                   | High     | Automate            | Not Implemented   |                                   |
+| Registration / data integrity   | R-002        | AE-REG-005     | Identity/address preserved                   | High     | Automate            | Implemented       | `tests/ui/checkout.spec.ts`       |
 | Account / authorized actions    | R-001        | AE-ACCT-001    | Account actions follow auth state            | High     | Automate            | Not Implemented   |                                   |
-| Account / address data          | R-007        | AE-ACCT-002    | Checkout addresses reflect registration      | High     | Automate            | Not Implemented   |                                   |
+| Account / address data          | R-007        | AE-ACCT-002    | Checkout addresses reflect registration      | High     | Automate            | Implemented       | `tests/ui/checkout.spec.ts`       |
 | Account / deletion              | R-003        | AE-ACCT-003    | Deleted account cannot log in                | Critical | Automate            | Implemented       | `tests/ui/user-lifecycle.spec.ts` |
 | Catalog / listing               | R-004        | AE-PROD-001    | Catalog shows products, names, and prices    | High     | Automate            | Implemented       | `tests/ui/products.spec.ts`       |
 | Catalog / details               | R-004        | AE-PROD-002    | Product detail contract displayed            | High     | Automate            | Not Implemented   |                                   |
@@ -38,10 +38,10 @@ automated-test paths.
 | Cart / login transition         | R-006        | AE-CART-005    | Guest cart survives login                    | Critical | Automate            | Not Implemented   |                                   |
 | Cart / duplicate add            | R-005        | AE-CART-006    | Repeated add has consistent quantity/total   | High     | Automate            | Not Implemented   |                                   |
 | Cart / empty state              | R-005        | AE-CART-007    | Empty cart offers product recovery           | Medium   | Automate            | Not Implemented   |                                   |
-| Checkout / guest gate           | R-007        | AE-CHK-001     | Guest is prompted to authenticate            | High     | Automate            | Not Implemented   |                                   |
-| Checkout / review               | R-007        | AE-CHK-002     | Addresses and order review are visible       | Critical | Automate            | Not Implemented   |                                   |
-| Checkout / calculations         | R-007        | AE-CHK-003     | Checkout matches cart values                 | Critical | Automate            | Not Implemented   |                                   |
-| Checkout / comment              | R-007        | AE-CHK-004     | Comment accepted before order placement      | High     | Automate            | Not Implemented   |                                   |
+| Checkout / guest gate           | R-007        | AE-CHK-001     | Guest is prompted to authenticate            | High     | Automate            | Implemented       | `tests/ui/checkout.spec.ts`       |
+| Checkout / review               | R-007        | AE-CHK-002     | Addresses and order review are visible       | Critical | Automate            | Implemented       | `tests/ui/checkout.spec.ts`       |
+| Checkout / calculations         | R-007        | AE-CHK-003     | Checkout matches cart values                 | Critical | Automate            | Implemented       | `tests/ui/checkout.spec.ts`       |
+| Checkout / comment              | R-007        | AE-CHK-004     | Comment accepted before order placement      | High     | Automate            | Implemented       | `tests/ui/checkout.spec.ts`       |
 | Payment / confirmation          | R-008        | AE-CHK-005     | Practice payment leads to confirmation       | Critical | Consider Later      | Not Implemented   |                                   |
 | Payment / invalid data          | R-008        | AE-CHK-006     | Invalid payment cannot report success        | High     | Manual              | Not Implemented   |                                   |
 | Order / invoice                 | R-008        | AE-CHK-007     | Confirmed-order invoice opens                | High     | Consider Later      | Not Implemented   |                                   |
@@ -50,17 +50,17 @@ automated-test paths.
 | Subscription / submission       | R-009        | AE-CONTACT-003 | Subscription confirmed on two pages          | Low      | Consider Later      | Not Implemented   |                                   |
 | API / products contract         | R-010        | AE-API-001     | Product collection returned                  | High     | Automate            | Implemented       | `tests/api/products.spec.ts`      |
 | API / products method           | R-010        | AE-API-002     | Unsupported product method represented       | Medium   | Automate            | Not Implemented   |                                   |
-| API / brands contract           | R-010        | AE-API-003     | Brand collection returned                    | Medium   | Automate            | Not Implemented   |                                   |
+| API / brands contract           | R-010        | AE-API-003     | Brand collection returned                    | Medium   | Automate            | Implemented       | `tests/api/catalog-auth.spec.ts`  |
 | API / brands method             | R-010        | AE-API-004     | Unsupported brand method represented         | Medium   | Automate            | Not Implemented   |                                   |
-| API / search                    | R-010        | AE-API-005     | Valid search returns matching products       | High     | Automate            | Not Implemented   |                                   |
+| API / search                    | R-010        | AE-API-005     | Valid search returns matching products       | High     | Automate            | Implemented       | `tests/api/catalog-auth.spec.ts`  |
 | API / search validation         | R-010        | AE-API-006     | Missing search parameter represented         | High     | Automate            | Implemented       | `tests/api/products.spec.ts`      |
 | API / valid login               | R-001        | AE-API-007     | Valid disposable account verified            | High     | Consider Later      | Not Implemented   |                                   |
-| API / invalid login             | R-001        | AE-API-008     | Invalid credentials rejected                 | High     | Automate            | Not Implemented   |                                   |
+| API / invalid login             | R-001        | AE-API-008     | Invalid credentials rejected                 | High     | Automate            | Implemented       | `tests/api/catalog-auth.spec.ts`  |
 | API / login contract            | R-010        | AE-API-009     | Missing parameters/method represented        | High     | Automate            | Not Implemented   |                                   |
 | API / account lifecycle         | R-002, R-003 | AE-API-010     | Disposable account create/read/update/delete | Critical | Consider Later      | Not Implemented   |                                   |
 
 ## Coverage interpretation
 
-All 52 designed scenarios map to at least one identified risk. Thirteen scenarios have
-implementations through Phase 4; the remaining 39 retain `Not Implemented` status and empty test
+All 52 designed scenarios map to at least one identified risk. Twenty-two scenarios have
+implementations through Phase 5; the remaining 30 retain `Not Implemented` status and empty test
 paths. Scenario wording and decisions are authoritative in `TEST-SCENARIOS.md`.

@@ -1,7 +1,8 @@
 # Test Data Strategy
 
 **Analysis date:** 2026-09-10
-**Status:** Phase 4 implementation uses generated users and runtime-discovered cart products.
+**Status:** Phase 5 uses generated users, runtime-discovered products, and non-submitting checkout
+data.
 
 ## Principles
 
@@ -20,10 +21,10 @@
 | Dynamic user                | Unique plus-addressed or generated test-domain email, synthetic profile/address, run identifier. | Create only for stateful scenarios; guarantee deletion in teardown and record cleanup failures.         |
 | Invalid login               | Structurally valid, clearly non-existing synthetic email and non-secret password.                | Non-mutating; avoid repeated attempts that resemble brute force.                                        |
 | Products                    | Discover through the catalog/API, then select an available item meeting the scenario oracle.     | Do not assume permanent names, prices, counts, or stock; preserve selected values for later assertions. |
-| Search                      | Use a currently observed stable term such as `top`, plus a unique no-match token.                | Reconfirm relevance before hard-coding; blank-search expected behavior is an open question.             |
+| Search                      | Use an officially documented term such as `jean`, plus a unique no-match token.                  | Reconfirm relevance before hard-coding; blank-search expected behavior is an open question.             |
 | Cart                        | New isolated browser context and only the minimum products/quantities required.                  | Remove items or discard the context; never share cart state across parallel workers.                    |
-| Checkout/address            | Synthetic identity, address, phone, and disposable account.                                      | Delete the account after evidence capture; do not use real addresses or phone numbers.                  |
-| Payment/order               | Clearly synthetic practice values only and the minimum order volume.                             | No documented order deletion exists; keep execution manual/low frequency until impact is understood.    |
+| Checkout/address            | Synthetic identity, address, phone, comment, and disposable account.                             | Delete the account after evidence capture; do not use real addresses or phone numbers.                  |
+| Payment/order               | Clearly synthetic practice values only if a separately approved scenario requires them.          | No documented order deletion exists; Phase 5 does not fill payment fields or submit orders.             |
 | Contact/review/subscription | Synthetic content only if explicitly approved for a focused check.                               | No documented cleanup exists; avoid routine automation and never submit spam-like volume.               |
 
 ## Supported account cleanup
@@ -46,6 +47,17 @@ must succeed and be confirmed; API deletion is fallback cleanup, not a substitut
 Cart tests discover products at runtime, preserve observed identifiers/names/prices for exact
 assertions, and use a fresh browser context for each scenario. Closing the context discards cart
 state without persistent application data.
+
+Each authenticated Phase 5 checkout test owns its own synthetic account. `AE-REG-005` creates that
+account through the registration UI so it can validate submitted-field persistence; the remaining
+authenticated checkout scenarios use supported API setup. Every account is verified absent through
+`DELETE /api/deleteAccount` plus `POST /api/verifyLogin` during teardown. The guest checkout test
+creates no account. The comment is synthetic and is not submitted as an order.
+
+The site documents account deletion but no order-deletion endpoint, UI, reset, or database access.
+Because `AE-CHK-005` remains `Consider Later`, Phase 5 stops after verifying the payment page and
+creates no order record. Synthetic payment values are therefore a policy requirement for any future
+approved execution, not data used or stored by the current suite.
 
 ## Open data questions
 
